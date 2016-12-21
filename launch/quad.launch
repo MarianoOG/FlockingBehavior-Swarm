@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!-- One quadrotor, gazebo, desired trajectory, controller and plot -->
+
+<launch>
+
+  <!-- Start Gazebo with empty world running in (max) realtime and the quadrotor -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <!-- <arg name="gui" value="false"/>
+    <arg name="headless" value="true"/> -->
+  </include>
+
+  <include file="$(find swarm)/launch/call_quad.launch">
+    <arg name="name" value="uav0"/>
+  </include>
+  
+  <group ns="uav0">
+    <!-- Desired position -->
+    <!-- <node pkg="swarm" type="go_and_stay.py" name="stay"/> -->
+    <!-- <node pkg="swarm" type="go_up_and_stay.py" name="up"/> -->
+    <!-- <node pkg="swarm" type="go_up_down_and_stay.py" name="up_down"/> -->
+    <!-- <node pkg="swarm" type="go_up_right_and_stay.py" name="up_right"/> -->
+    <!-- <node pkg="swarm" type="go_up_left_and_stay.py" name="up_left"/> -->
+    <!-- <node pkg="swarm" type="go_up_front_and_stay.py" name="up_front"/> -->
+    <!-- <node pkg="swarm" type="go_up_back_and_stay.py" name="up_back"/> -->
+    <!-- <node pkg="swarm" type="go_up_diagonal_and_stay.py" name="up_diagonal"/> -->
+    <!-- <node pkg="swarm" type="go_random_and_stay.py" name="random"/> -->
+    <!-- <node pkg="swarm" type="go_up_turn_and_stay.py" name="turn"/> -->
+    <!-- <node pkg="swarm" type="go_up_turn_right_and_stay.py" name="turn_right"/> -->
+    <!-- <node pkg="swarm" type="go_up_right_turn_right_and_stay.py" name="right_turn_right"/> -->
+    <!-- <node pkg="swarm" type="go_up_turn_diagonal_and_stay.py" name="up_turn_diagonal"/> -->
+    <!-- <node pkg="swarm" type="go_up_and_keep_turning.py" name="keep_turning"/> -->
+    <node pkg="swarm" type="go_and_keep_moving.py" name="keep_moving"/>
+
+  </group>
+
+  <!-- Euler angles -->
+  <node pkg="topic_tools" type="transform" name="euler" args="/uav0/ground_truth_to_tf/pose/pose/orientation /euler geometry_msgs/Vector3 'tf.transformations.euler_from_quaternion([m.x, m.y, m.z, m.w])' --import tf"/>
+
+  <!-- Plot stuff -->
+  <node pkg="rqt_plot" type="rqt_plot" name="position" args="/uav0/des_pos/position /uav0/ground_truth_to_tf/pose/pose/position /uav0/des_pos/yaw /euler"/>
+
+</launch>
