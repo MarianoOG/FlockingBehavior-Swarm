@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+from math import pi
 from swarm.msg import QuadStamped
 
 if __name__ == '__main__':
@@ -20,7 +21,9 @@ if __name__ == '__main__':
             if quad.header.stamp.secs >= 2:
                 quad.z = 1
             if quad.header.stamp.secs >= 3:
-                quad.x = 1
+                quad.yaw = - 2 * pi / 3.0
+            if quad.header.stamp.secs >= 6:
+                quad.yaw = 2 * pi / 3.0
             pub.publish(quad)
             rospy.loginfo("[%f, %f, %f - %f]", quad.x, quad.y, quad.z, quad.yaw)
             rate.sleep()
@@ -30,7 +33,7 @@ if __name__ == '__main__':
 
     finally:
         quad.header.stamp = rospy.Time.now()
-        quad.x = 0
         quad.z = 0
+        quad.yaw = 0
         pub.publish(quad)
         rospy.loginfo("End of node")

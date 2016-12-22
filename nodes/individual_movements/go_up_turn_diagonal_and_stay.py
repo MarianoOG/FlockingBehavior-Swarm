@@ -2,32 +2,32 @@
 import rospy
 from math import pi
 from random import randrange
-from swarm.msg import QuadHoverPos
+from swarm.msg import QuadStamped
 
 if __name__ == '__main__':
-    pub = rospy.Publisher('des_pos', QuadHoverPos, queue_size=1)
+    pub = rospy.Publisher('des_pos', QuadStamped, queue_size=1)
     rospy.init_node('go_up_and_stay', anonymous=True)
     rate = rospy.Rate(100)
     
-    quad = QuadHoverPos();
+    quad = QuadStamped();
     quad.header.frame_id = 'world'
-    quad.position.x = 0
-    quad.position.y = 0
-    quad.position.z = 0
+    quad.x = 0
+    quad.y = 0
+    quad.z = 0
     quad.yaw = 0
 
     try:
         while not rospy.is_shutdown():
             quad.header.stamp = rospy.Time.now()
             if quad.header.stamp.secs >= 2:
-                quad.position.z = 1
+                quad.z = 1
             if quad.header.stamp.secs >= 3:
                 quad.yaw = pi / 4.0
             if quad.header.stamp.secs >= 4:
-                if quad.position.x == 0: quad.position.x = randrange(-10,11,1) / 10.0
-                if quad.position.y == 0: quad.position.y = randrange(-10,11,1) / 10.0
+                if quad.x == 0: quad.x = randrange(-10,11,1) / 10.0
+                if quad.y == 0: quad.y = randrange(-10,11,1) / 10.0
             pub.publish(quad)
-            rospy.loginfo("[%f, %f, %f - %f]", quad.position.x, quad.position.y, quad.position.z, quad.yaw)
+            rospy.loginfo("[%f, %f, %f - %f]", quad.x, quad.y, quad.z, quad.yaw)
             rate.sleep()
 
     except rospy.ROSInterruptException:
@@ -35,9 +35,9 @@ if __name__ == '__main__':
 
     finally:
         quad.header.stamp = rospy.Time.now()
-        quad.position.x = 0
-        quad.position.y = 0
-        quad.position.z = 0
+        quad.x = 0
+        quad.y = 0
+        quad.z = 0
         quad.yaw = 0
         pub.publish(quad)
         rospy.loginfo("End of node")

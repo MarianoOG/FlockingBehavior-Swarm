@@ -18,8 +18,11 @@
       <arg name="y" value="$(arg y)"/>
     </include>
     
+    <!-- Position and velocity info of quadrotor -->
+    <node pkg="swarm" type="quad_info.py" name="quad_info"/>
+
     <!-- High level position controller -->
-    <node pkg="swarm" type="vel_controller.py" name="controller"/>
+    <node pkg="swarm" type="pos_controller.py" name="pos_controller"/>
 
   </group>
 
