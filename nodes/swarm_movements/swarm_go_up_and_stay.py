@@ -1,18 +1,21 @@
 #!/usr/bin/env python
-import rospy
+import rospy, sys
 from swarm.msg import QuadStamped
 
 if __name__ == '__main__':
-    rospy.init_node('S4_go_up_and_stay', anonymous=True)
+    rospy.init_node('swarm_go_up_and_stay', anonymous=True)
     rate = rospy.Rate(100)
-    
+    argv = sys.argv
+    rospy.myargv(argv)
+    n = int(argv[1])
+
     x = [0.0,0.0,-1.0,1.0]
     y = [-1.0,1.0,0.0,0.0]
 
     pub = []
     quad = []
-    for i in range(4):
-        pub.append(rospy.Publisher('/uav' + str(i+1) + '/des_pos', QuadStamped, queue_size=4))
+    for i in range(n):
+        pub.append(rospy.Publisher('/uav' + str(i) + '/des_pos', QuadStamped, queue_size=n))
         quad.append(QuadStamped())
         quad[i].header.frame_id = 'world'
         quad[i].x = x[i]
@@ -22,7 +25,7 @@ if __name__ == '__main__':
 
     try:
         while not rospy.is_shutdown():
-            for i in range(4):
+            for i in range(n):
                 quad[i].header.stamp = rospy.Time.now()
                 if quad[i].header.stamp.secs >= 2:
                     quad[i].z = 1.0
@@ -34,7 +37,7 @@ if __name__ == '__main__':
         pass
 
     finally:
-        for i in range(4):
+        for i in range(n):
             quad[i].header.stamp = rospy.Time.now()
             quad[i].z = 0
             pub[i].publish(quad[i])

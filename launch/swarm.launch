@@ -5,16 +5,18 @@
 	
 	<!-- General variables -->
 	<arg name="n"/>
-	<arg name="world" default="empty_world"/>
+	<arg name="visible" default="false"/>
 
-	<!-- Start Gazebo with wg world running in (max) realtime-->
-	<include file="$(find gazebo_ros)/launch/$(arg world).launch"/>
+	<!-- Start Gazebo with empty world running in (max) realtime and the quadrotor -->
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="gui" value="false" unless="$(arg visible)"/>
+		<arg name="headless" value="true" unless="$(arg visible)"/>
+	</include>
 
 	<!-- Swarm spawn -->
 	<include file="$(find swarm)/launch/call_swarm/s$(arg n).launch"/>
 
 	<!-- Desired trayectory -->
-	<!-- <node pkg="swarm" type="S4_go_up_and_circle.py" name="Up_and_circle"/> -->
-	<node pkg="swarm" type="S4_go_up_and_stay.py" name="Up_and_stay"/>
+	<node pkg="swarm" type="swarm_go_up_and_stay.py" name="swarm_go_up_and_stay" args="$(arg n)" output="screen"/>
 
 </launch>
