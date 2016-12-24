@@ -3,10 +3,12 @@
 
 <launch>
 
+  <arg name="visible" default="false"/>
+
   <!-- Start Gazebo with empty world running in (max) realtime and the quadrotor -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <!-- <arg name="gui" value="false"/>
-    <arg name="headless" value="true"/> -->
+    <arg name="gui" value="false" unless="$(arg visible)"/>
+    <arg name="headless" value="true" unless="$(arg visible)"/>
   </include>
 
   <include file="$(find swarm)/launch/call_quad.launch">
@@ -35,5 +37,9 @@
 
   <!-- Plot stuff -->
   <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" args="/uav0/des_pos /uav0/quad_state/pos"/>
+
+  <!-- rviz -->
+  <!-- <node pkg="tf" type="static_transform_publisher" name="fixed_frame_error" args="0 0 0 0 0 0 1 map uav0/base_footprint 10"/>
+  <node pkg="rviz" type="rviz" name="rviz"/> -->
 
 </launch>

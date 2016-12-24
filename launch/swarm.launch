@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!-- Spawn swarm of n size and make the reynolds and micro-pso algoritms with them -->
+
+<launch>
+	
+	<!-- General variables -->
+	<arg name="n"/>
+	<arg name="world" default="empty_world"/>
+
+	<!-- Start Gazebo with wg world running in (max) realtime-->
+	<include file="$(find gazebo_ros)/launch/$(arg world).launch"/>
+
+	<!-- Swarm spawn -->
+	<include file="$(find swarm)/launch/call_swarm/s$(arg n).launch"/>
+
+	<!-- Desired trayectory -->
+	<!-- <node pkg="swarm" type="S4_go_up_and_circle.py" name="Up_and_circle"/> -->
+	<node pkg="swarm" type="S4_go_up_and_stay.py" name="Up_and_stay"/>
+
+</launch>
