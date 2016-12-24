@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
-<!-- Four quadrotors, gazebo, desired trajectory, controller -->
+<!-- Swarm made of 4 quadrotors -->
 
 <launch>
 
 	<!-- Initial positions (editable) -->
-	<arg name="x0" default="0"/>
-	<arg name="y0" default="-1"/>
-	<arg name="x1" default="0"/>
-	<arg name="y1" default="1"/>
-	<arg name="x2" default="-1"/>
-	<arg name="y2" default="0"/>
-	<arg name="x3" default="1"/>
-	<arg name="y3" default="0"/>
+	<arg name="x0" default="0.0"/>
+	<arg name="y0" default="1.0"/>
+	<arg name="x1" default="0.0"/>
+	<arg name="y1" default="2.0"/>
+	<arg name="x2" default="0.0"/>
+	<arg name="y2" default="3.0"/>
+	<arg name="x3" default="0.0"/>
+	<arg name="y3" default="4.0"/>
 
 	<!-- Spawn quadrotors in positions -->
 	<include file="$(find swarm)/launch/call_quad.launch">
@@ -37,20 +37,20 @@
 
 	<!-- Export positions as parameters -->
 	<group ns="uav0">
-		<param name="x" value="(arg x0)"/>
-		<param name="y" value="(arg y0)"/>
+		<param name="x" value="$(arg x0)" type="double"/>
+		<param name="y" value="$(arg y0)" type="double"/>
 	</group>
 	<group ns="uav1">
-		<param name="x" value="(arg x1)"/>
-		<param name="y" value="(arg y1)"/>
+		<param name="x" value="$(arg x1)" type="double"/>
+		<param name="y" value="$(arg y1)" type="double"/>
 	</group>
 	<group ns="uav2">
-		<param name="x" value="(arg x2)"/>
-		<param name="y" value="(arg y2)"/>
+		<param name="x" value="$(arg x2)" type="double"/>
+		<param name="y" value="$(arg y2)" type="double"/>
 	</group>
 	<group ns="uav3">
-		<param name="x" value="(arg x3)"/>
-		<param name="y" value="(arg y3)"/>
+		<param name="x" value="$(arg x3)" type="double"/>
+		<param name="y" value="$(arg y3)" type="double"/>
 	</group>
 
 </launch>

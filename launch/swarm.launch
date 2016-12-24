@@ -5,7 +5,7 @@
 	
 	<!-- General variables -->
 	<arg name="n"/>
-	<arg name="visible" default="false"/>
+	<arg name="visible" default="true"/>
 
 	<!-- Start Gazebo with empty world running in (max) realtime and the quadrotor -->
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -17,6 +17,6 @@
 	<include file="$(find swarm)/launch/call_swarm/s$(arg n).launch"/>
 
 	<!-- Desired trayectory -->
-	<node pkg="swarm" type="swarm_go_up_and_stay.py" name="swarm_go_up_and_stay" args="$(arg n)" output="screen"/>
+	<node pkg="swarm" type="swarm_go_up_and_stay.py" name="swarm_go_up_and_stay" args="$(arg n)"/>
 
 </launch>

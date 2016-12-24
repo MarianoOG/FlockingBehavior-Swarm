@@ -9,17 +9,15 @@ if __name__ == '__main__':
     rospy.myargv(argv)
     n = int(argv[1])
 
-    x = [0.0,0.0,-1.0,1.0]
-    y = [-1.0,1.0,0.0,0.0]
-
     pub = []
     quad = []
     for i in range(n):
         pub.append(rospy.Publisher('/uav' + str(i) + '/des_pos', QuadStamped, queue_size=n))
         quad.append(QuadStamped())
         quad[i].header.frame_id = 'world'
-        quad[i].x = x[i]
-        quad[i].y = y[i]
+        xy = rospy.get_param('/uav' + str(i))
+        quad[i].x = xy['x']
+        quad[i].y = xy['y']
         quad[i].z = 0
         quad[i].yaw = 0
 
