@@ -50,7 +50,7 @@ if __name__ == '__main__':
 	rospy.init_node('quad_info', anonymous=True)
 	imu_sub = message_filters.Subscriber('raw_imu', Imu)
 	pose_sub = message_filters.Subscriber('ground_truth_to_tf/pose', PoseStamped)
-	ts = message_filters.ApproximateTimeSynchronizer([imu_sub, pose_sub], 2,0.01)
+	ts = message_filters.ApproximateTimeSynchronizer([imu_sub, pose_sub], 2, 0.01)
 	
 	quad_state = QuadState()
 	quad_state.header.frame_id = 'world'
