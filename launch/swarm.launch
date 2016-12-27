@@ -17,7 +17,9 @@
 	<include file="$(find swarm)/launch/call_swarm/s$(arg n).launch"/>
 
 	<!-- Desired movement -->
-	<!-- <node pkg="swarm" type="swarm_go_up_and_stay.py" name="swarm_go_up_and_stay" args="$(arg n)"/> -->
-	<node pkg="swarm" type="reynolds.py" name="reynolds" args="$(arg n)" output="screen"/>
+	<group ns="swarm">
+		<node pkg="swarm" type="micro_pso.py" name="micro_pso" args="$(arg n)" output="screen"/>
+		<node pkg="swarm" type="reynolds.py" name="reynolds" args="$(arg n)" output="screen"/>
+	</group>
 
 </launch>

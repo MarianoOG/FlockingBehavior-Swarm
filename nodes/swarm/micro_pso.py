@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import message_filters, rospy, sys
-from swarm.msg import QuadStamped, QuadState
+from swarm.msg import QuadState
 
 def multiple_callback(*args):
     global pub, quad, n
@@ -8,15 +8,14 @@ def multiple_callback(*args):
     # Publish:
     try:
         for i in range(n):
-            # rospy.loginfo("%i, %f", i, args[i].pos.z)
+            quad[i] = args[i]
             quad[i].header.stamp = rospy.Time.now()
-            quad[i].z = 1    
             pub[i].publish(quad[i])
     except rospy.ROSException:
         pass
 
 if __name__ == '__main__':
-    rospy.init_node('reynolds', anonymous=True)
+    rospy.init_node('micro_pso', anonymous=True)
     argv = sys.argv
     rospy.myargv(argv)
     n = int(argv[1])
@@ -25,15 +24,10 @@ if __name__ == '__main__':
     pub = []
     quad = []
     for i in range(n):        
-        sub.append(message_filters.Subscriber('/uav' + str(i) + '/next_generation', QuadState))
-        pub.append(rospy.Publisher('/uav' + str(i) + '/des_pos', QuadStamped, queue_size=10))
-        quad.append(QuadStamped())
+        sub.append(message_filters.Subscriber('/uav' + str(i) + '/quad_state', QuadState))
+        pub.append(rospy.Publisher('/uav' + str(i) + '/next_generation', QuadState, queue_size=10))
+        quad.append(QuadState())
         quad[i].header.frame_id = 'world'
-        xy = rospy.get_param('/uav' + str(i))
-        quad[i].x = xy['x']
-        quad[i].y = xy['y']
-        quad[i].z = 0
-        quad[i].yaw = 0
 
     ts = message_filters.ApproximateTimeSynchronizer(sub, n, 0.01)
 
@@ -49,10 +43,5 @@ if __name__ == '__main__':
     finally:
         for i in range(n):
             quad[i].header.stamp = rospy.Time.now()
-            xy = rospy.get_param('/uav' + str(i))
-            quad[i].x = xy
-            quad[i].y = xy['x']
-            quad[i].z = xy['y']
-            quad[i].yaw = 0
             pub[i].publish(quad[i])
         rospy.loginfo("End of node")

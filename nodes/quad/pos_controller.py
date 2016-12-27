@@ -43,7 +43,7 @@ if __name__ == '__main__':
 	rospy.init_node('pos_controller', anonymous=True)
 	state_sub = message_filters.Subscriber('quad_state', QuadState)
 	des_sub = message_filters.Subscriber('des_pos', QuadStamped)
-	ts = message_filters.ApproximateTimeSynchronizer([state_sub, des_sub], 2,0.01)
+	ts = message_filters.ApproximateTimeSynchronizer([state_sub, des_sub], 10,0.01)
 
 	pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
 	twist = Twist()
