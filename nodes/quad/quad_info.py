@@ -33,11 +33,9 @@ def info_callback(imu, pose):
 	quad_state.vel.z = (quad_state.pos.z - pos_prev.z) / delta
 	quad_state.vel.yaw = imu.angular_velocity.z
 
-	# Time stamp:
-	quad_state.header.stamp = rospy.Time.now()
-
 	# Publish twist:
 	try:
+		quad_state.header.stamp = rospy.Time.now()
 		pub.publish(quad_state)
 	except rospy.ROSException:
 		pass
@@ -50,16 +48,17 @@ if __name__ == '__main__':
 	rospy.init_node('quad_info', anonymous=True)
 	imu_sub = message_filters.Subscriber('raw_imu', Imu)
 	pose_sub = message_filters.Subscriber('ground_truth_to_tf/pose', PoseStamped)
-	ts = message_filters.ApproximateTimeSynchronizer([imu_sub, pose_sub], 2, 0.01)
+	ts = message_filters.ApproximateTimeSynchronizer([imu_sub, pose_sub], 10, 0.015)
 	
 	quad_state = QuadState()
 	quad_state.header.frame_id = 'world'
 	pos_prev = Vector3()
-	pub = rospy.Publisher('quad_state', QuadState, queue_size=5)
+	pub = rospy.Publisher('quad_state', QuadState, queue_size=10)
+	quad_state.pos.x = 0; quad_state.pos.y = 0; quad_state.pos.z = 0; quad_state.pos.yaw = 0
+	quad_state.vel.x = 0; quad_state.vel.y = 0; quad_state.vel.z = 0; quad_state.vel.yaw = 0
 	t_prev = 0
 
 	try:
-		rospy.sleep(1)
 		ts.registerCallback(info_callback)
 		rospy.loginfo("Start spinning")
 		rospy.spin()
@@ -68,8 +67,8 @@ if __name__ == '__main__':
 		pass
 
 	finally:
+		quad_state.pos.x = 0; quad_state.pos.y = 0; quad_state.pos.z = 0; quad_state.pos.yaw = 0
+		quad_state.vel.x = 0; quad_state.vel.y = 0; quad_state.vel.z = 0; quad_state.vel.yaw = 0
 		quad_state.header.stamp = rospy.Time.now()
-		quad_state.pos.x = 0; quad_state.pos.y = 0; quad_state.pos.z = 0; quad_state.pos.yaw = 0;
-		quad_state.vel.x = 0; quad_state.vel.y = 0; quad_state.vel.z = 0; quad_state.vel.yaw = 0;
 		pub.publish(quad_state)
 		rospy.loginfo("End of node")

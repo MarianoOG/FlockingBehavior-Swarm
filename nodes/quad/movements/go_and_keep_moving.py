@@ -25,7 +25,7 @@ if __name__ == '__main__':
                 quad.y = 5 * random() - 2.5
                 quad.z = 1.5 * random() + 0.5
                 quad.yaw = 2 * pi * random() - pi
-                t += 3
+                t += 4
             pub.publish(quad)
             rospy.loginfo("[%f, %f, %f - %f]", quad.x, quad.y, quad.z, quad.yaw)
             rate.sleep()

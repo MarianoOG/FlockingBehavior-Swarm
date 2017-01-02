@@ -1,17 +1,15 @@
 <?xml version="1.0"?>
-<!-- Swarm made of 4 quadrotors -->
+<!-- Swarm made of 3 quadrotors -->
 
 <launch>
 
 	<!-- Initial positions (editable) -->
-	<arg name="x0" default="-0.5"/>
-	<arg name="y0" default="0.5"/>
-	<arg name="x1" default="-0.5"/>
-	<arg name="y1" default="-0.5"/>
-	<arg name="x2" default="0.5"/>
-	<arg name="y2" default="-0.5"/>
-	<arg name="x3" default="0.5"/>
-	<arg name="y3" default="0.5"/>
+	<arg name="x0" default="1.0"/> <!-- Edit -->
+	<arg name="y0" default="0.0"/> <!-- Edit -->
+	<arg name="x1" default="-1.0"/> <!-- Edit -->
+	<arg name="y1" default="0.0"/> <!-- Edit -->
+	<arg name="x2" default="0.0"/> <!-- Edit -->
+	<arg name="y2" default="0.0"/> <!-- Edit -->
 
 	<!-- Spawn quadrotors in positions -->
 	<include file="$(find swarm)/launch/call_quad.launch">
@@ -29,11 +27,6 @@
 		<arg name="x" value="$(arg x2)"/>
 		<arg name="y" value="$(arg y2)"/>
 	</include>
-	<include file="$(find swarm)/launch/call_quad.launch">
-		<arg name="name" value="uav3"/>
-		<arg name="x" value="$(arg x3)"/>
-		<arg name="y" value="$(arg y3)"/>
-	</include>
 
 	<!-- Export positions as parameters -->
 	<group ns="uav0">
@@ -47,10 +40,6 @@
 	<group ns="uav2">
 		<param name="x" value="$(arg x2)" type="double"/>
 		<param name="y" value="$(arg y2)" type="double"/>
-	</group>
-	<group ns="uav3">
-		<param name="x" value="$(arg x3)" type="double"/>
-		<param name="y" value="$(arg y3)" type="double"/>
 	</group>
 
 </launch>

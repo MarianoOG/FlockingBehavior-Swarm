@@ -30,6 +30,12 @@ def info_callback(state, des):
 	else: e_yaw = e_yaw2
 	twist.angular.z = - kd[2] * state.vel.yaw - kp[2] * e_yaw
 
+	# Limit:
+	if abs(twist.linear.x) < 0.05: twist.linear.x = 0.0
+	if abs(twist.linear.y) < 0.05: twist.linear.y = 0.0
+	if abs(twist.linear.z) < 0.05: twist.linear.z = 0.0
+	if abs(twist.angular.z) < 0.05: twist.angular.z = 0.0
+
 	# Publish twist:
 	try:
 		pub.publish(twist)
@@ -43,12 +49,12 @@ if __name__ == '__main__':
 	rospy.init_node('pos_controller', anonymous=True)
 	state_sub = message_filters.Subscriber('quad_state', QuadState)
 	des_sub = message_filters.Subscriber('des_pos', QuadStamped)
-	ts = message_filters.ApproximateTimeSynchronizer([state_sub, des_sub], 10,0.01)
+	ts = message_filters.ApproximateTimeSynchronizer([state_sub, des_sub], 10,0.015)
 
-	pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
+	pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 	twist = Twist()
-	twist.angular.x = 0 
-	twist.angular.y = 0
+	twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+	twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
 
 	try:
 		rospy.sleep(1)
@@ -60,6 +66,7 @@ if __name__ == '__main__':
 		pass
 
 	finally:
-		twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0; twist.angular.z = 0
+		twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+		twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
 		pub.publish(twist)
 		rospy.loginfo("End of node")

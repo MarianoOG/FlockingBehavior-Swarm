@@ -4,8 +4,8 @@
 <launch>
 
 	<!-- Initial positions (editable) -->
-	<arg name="x0" default="1.0"/> <!-- Edit -->
-	<arg name="y0" default="0.0"/> <!-- Edit -->
+	<arg name="x0" default="0.0"/> <!-- Edit -->
+	<arg name="y0" default="1.0"/> <!-- Edit -->
 	<arg name="x1" default="0.0"/> <!-- Edit -->
 	<arg name="y1" default="0.0"/> <!-- Edit -->
 
