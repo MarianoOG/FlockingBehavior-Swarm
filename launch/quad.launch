@@ -24,7 +24,7 @@
     <!-- <node pkg="swarm" type="go_up_left_and_stay.py" name="up_left"/> -->
     <!-- <node pkg="swarm" type="go_up_front_and_stay.py" name="up_front"/> -->
     <!-- <node pkg="swarm" type="go_up_back_and_stay.py" name="up_back"/> -->
-    <node pkg="swarm" type="go_up_diagonal_and_stay.py" name="up_diagonal"/>
+    <!-- <node pkg="swarm" type="go_up_diagonal_and_stay.py" name="up_diagonal"/> -->
     <!-- <node pkg="swarm" type="go_random_and_stay.py" name="random"/> -->
     <!-- <node pkg="swarm" type="go_up_turn_and_stay.py" name="turn"/> -->
     <!-- <node pkg="swarm" type="go_up_turn_turn_and_stay.py" name="turn_turn"/> -->
@@ -32,10 +32,13 @@
     <!-- <node pkg="swarm" type="go_up_turn_right_and_stay.py" name="turn_right"/> -->
     <!-- <node pkg="swarm" type="go_up_right_turn_right_and_stay.py" name="right_turn_right"/> -->
     <!-- <node pkg="swarm" type="go_up_turn_diagonal_and_stay.py" name="up_turn_diagonal"/> -->
-    <!-- <node pkg="swarm" type="go_and_keep_moving.py" name="keep_moving"/> -->
+    <node pkg="swarm" type="go_and_keep_moving.py" name="keep_moving"/>
   </group>
 
   <!-- Plot stuff -->
-  <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" args="/uav0/des_pos /uav0/quad_state/pos"/>
+  <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" args="/uav0/des_pos /uav0/quad_state/pos" unless="$(arg visible)"/>
+
+  <!-- Rviz -->
+  <node pkg="rviz" type="rviz" name="rviz" args="-f world -d $(find swarm)/rviz_cfg/quad.rviz"/>
 
 </launch>

@@ -9,16 +9,17 @@ def multiple_callback(*args):
 
     # Repulsion & alignment:
     D = 0.65
-    r0_r = 1.5
-    r1_r = 1.0
-    
-    c_frict = 0.3
-    r0_a = 2.0
-    r1_a = 0.8
-    r2_a = 0.5
+    r0 = 1.5
+    r1 = 1.0
+
+    c_frict = 0.1
+    r2 = 2.0
+    r3 = 1.1
+    r4 = 1.9
     
     dist = Vector3()
-    
+    nn = []
+
     for i in range(n):
         a_pot[i].x = 0.0
         a_pot[i].y = 0.0
@@ -28,6 +29,8 @@ def multiple_callback(*args):
         a_slip[i].y = 0.0
         a_slip[i].z = 0.0
 
+        nn.append(0.0)
+
     for i in range(n):
         for j in range(i,n):
             if not(i==j):
@@ -36,37 +39,38 @@ def multiple_callback(*args):
                 dist.z = args[j].pos.z - args[i].pos.z
                 d = sqrt(dist.x*dist.x + dist.y*dist.y + dist.z*dist.z)
 
-                if d<r0_r:
-                    a_pot[i].x += min(r1_r,r0_r-d)*dist.x / d
-                    a_pot[i].y += min(r1_r,r0_r-d)*dist.y / d
-                    a_pot[i].z += min(r1_r,r0_r-d)*dist.z / d
+                if d<r0:
+                    a_pot[i].x += min(r1,r0-d)*dist.x / d
+                    a_pot[i].y += min(r1,r0-d)*dist.y / d
+                    a_pot[i].z += min(r1,r0-d)*dist.z / d
                     a_pot[j].x -= a_pot[i].x
                     a_pot[j].y -= a_pot[i].y
                     a_pot[j].z -= a_pot[i].z
 
-                m = max(d-(r0_a-r2_a),r1_a)
-                m = m * m
-                a_slip[i].x += (args[j].vel.x - args[i].vel.x) / m
-                a_slip[i].y += (args[j].vel.y - args[i].vel.y) / m
-                a_slip[i].z += (args[j].vel.z - args[i].vel.z) / m
-                a_slip[j].x -= a_slip[i].x
-                a_slip[j].y -= a_slip[i].y
-                a_slip[j].z -= a_slip[i].z
-        
-        a_pot[i].x *= - D
-        a_pot[i].y *= - D
-        a_pot[i].z *= - D
-        # rospy.loginfo("i: %i, a_pot [%f, %f, %f]", i, a_pot[i].x, a_pot[i].y, a_pot[i].z)
+                if d<r2:
+                    d2 = max(d-(r2-r4),r3)
+                    d2 = d2 * d2
+                    nn[i] += 1.0
+                    nn[j] += 1.0
+                    a_slip[i].x += args[j].vel.x - args[i].vel.x / d2
+                    a_slip[i].y += args[j].vel.y - args[i].vel.y / d2
+                    a_slip[i].z += args[j].vel.z - args[i].vel.z / d2
+                    a_slip[j].x -= a_slip[i].x
+                    a_slip[j].y -= a_slip[i].y
+                    a_slip[j].z -= a_slip[i].z
 
-        a_slip[i].x *= c_frict
-        a_slip[i].y *= c_frict
-        a_slip[i].y *= c_frict
-        rospy.loginfo("i: %i, a_slip [%f, %f, %f]", i, a_slip[i].x, a_slip[i].y, a_slip[i].z)
+        m = max(nn[i],1)
+        a_slip[i].x /= m
+        a_slip[i].y /= m
+        a_slip[i].z /= m
+        
+        # rospy.loginfo("i: %i, a_pot [%f, %f, %f]", i, a_pot[i].x, a_pot[i].y, a_pot[i].z)
+        # rospy.loginfo("i: %i, a_slip [%f, %f, %f]", i, a_slip[i].x, a_slip[i].y, a_slip[i].z)
 
         # Final movements:
-        quad[i].x = args[i].pos.x + a_pot[i].x # + a_slip[i].x
-        quad[i].y = args[i].pos.y + a_pot[i].y # + a_slip[i].y
-        quad[i].z = args[i].pos.z + a_pot[i].z # + a_slip[i].z
+        quad[i].x = args[i].pos.x - D * a_pot[i].x + c_frict * a_slip[i].x
+        quad[i].y = args[i].pos.y - D * a_pot[i].y + c_frict * a_slip[i].y
+        quad[i].z = args[i].pos.z - D * a_pot[i].z + c_frict * a_slip[i].z
 
         # Go up at 1 second:
         if (quad[i].header.stamp.secs == 1):
