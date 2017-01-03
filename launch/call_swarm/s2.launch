@@ -5,20 +5,22 @@
 
 	<!-- Initial positions (editable) -->
 	<arg name="x0" default="0.0"/> <!-- Edit -->
-	<arg name="y0" default="1.0"/> <!-- Edit -->
+	<arg name="y0" default="0.5"/> <!-- Edit -->
 	<arg name="x1" default="0.0"/> <!-- Edit -->
-	<arg name="y1" default="0.0"/> <!-- Edit -->
+	<arg name="y1" default="-0.5"/> <!-- Edit -->
 
 	<!-- Spawn quadrotors in positions -->
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav0"/>
 		<arg name="x" value="$(arg x0)"/>
 		<arg name="y" value="$(arg y0)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav1"/>
 		<arg name="x" value="$(arg x1)"/>
 		<arg name="y" value="$(arg y1)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 
 	<!-- Export positions as parameters -->

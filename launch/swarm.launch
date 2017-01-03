@@ -20,9 +20,6 @@
 	<!-- <node pkg="rviz" type="rviz" name="rviz" args="-f world -d $(find swarm)/rviz_cfg/s$(arg n).rviz"/> -->
 
 	<!-- Desired movement -->
-	<group ns="swarm">
-		<node pkg="swarm" type="micro_pso.py" name="micro_pso" args="$(arg n)" output="screen"/>
-		<node pkg="swarm" type="reynolds.py" name="reynolds" args="$(arg n)" output="screen"/>
-	</group>
+	<node pkg="swarm" type="reynolds.py" name="reynolds" args="$(arg n)" output="screen"/>
 
 </launch>

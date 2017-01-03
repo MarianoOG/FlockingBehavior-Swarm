@@ -7,6 +7,7 @@
   <arg name="name"/>
   <arg name="x" default="0.0"/>
   <arg name="y" default="0.0"/>
+  <arg name="swarm_nodes" default="false"/>
 
   <!-- Quadrotor with pos controller and info topic -->
   <group ns="$(arg name)">
@@ -25,6 +26,10 @@
 
     <!-- High level position controller -->
     <node pkg="swarm" type="pos_controller.py" name="pos_controller"/>
+
+    <!-- micro_pso and reynolds nodes -->
+    <node pkg="swarm" type="micro_pso.py" name="micro_pso" output="screen" if="$(arg swarm_nodes)"/>
+    <!-- <node pkg="swarm" type="reynolds.py" name="reynolds" if="$(arg swarm_nodes)"/> -->
 
   </group>
 

@@ -4,24 +4,24 @@
 <launch>
 
 	<!-- Initial positions (editable) -->
-	<arg name="x0" default="-1.0"/> <!-- Edit -->
-	<arg name="y0" default="-1.5"/> <!-- Edit -->
-	<arg name="x1" default="-1.0"/> <!-- Edit -->
-	<arg name="y1" default="-0.5"/> <!-- Edit -->
-	<arg name="x2" default="-1.0"/> <!-- Edit -->
-	<arg name="y2" default="0.5"/> <!-- Edit -->
+	<arg name="x0" default="1.0"/> <!-- Edit -->
+	<arg name="y0" default="0.0"/> <!-- Edit -->
+	<arg name="x1" default="1.0"/> <!-- Edit -->
+	<arg name="y1" default="1.0"/> <!-- Edit -->
+	<arg name="x2" default="0.0"/> <!-- Edit -->
+	<arg name="y2" default="1.0"/> <!-- Edit -->
 	<arg name="x3" default="-1.0"/> <!-- Edit -->
-	<arg name="y3" default="1.5"/> <!-- Edit -->
-	<arg name="x4" default="0.0"/> <!-- Edit -->
+	<arg name="y3" default="0.0"/> <!-- Edit -->
+	<arg name="x4" default="-1.0"/> <!-- Edit -->
 	<arg name="y4" default="-1.0"/> <!-- Edit -->
 	<arg name="x5" default="0.0"/> <!-- Edit -->
-	<arg name="y5" default="0.0"/> <!-- Edit -->
-	<arg name="x6" default="0.0"/> <!-- Edit -->
-	<arg name="y6" default="1.0"/> <!-- Edit -->
-	<arg name="x7" default="1.0"/> <!-- Edit -->
-	<arg name="y7" default="-0.5"/> <!-- Edit -->
-	<arg name="x8" default="1.0"/> <!-- Edit -->
-	<arg name="y8" default="0.5"/> <!-- Edit -->
+	<arg name="y5" default="-1.0"/> <!-- Edit -->
+	<arg name="x6" default="1.0"/> <!-- Edit -->
+	<arg name="y6" default="-1.0"/> <!-- Edit -->
+	<arg name="x7" default="-1.0"/> <!-- Edit -->
+	<arg name="y7" default="1.0"/> <!-- Edit -->
+	<arg name="x8" default="0.0"/> <!-- Edit -->
+	<arg name="y8" default="0.0"/> <!-- Edit -->
 	<arg name="x9" default="2.0"/> <!-- Edit -->
 	<arg name="y9" default="0.0"/> <!-- Edit -->
 
@@ -30,51 +30,61 @@
 		<arg name="name" value="uav0"/>
 		<arg name="x" value="$(arg x0)"/>
 		<arg name="y" value="$(arg y0)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav1"/>
 		<arg name="x" value="$(arg x1)"/>
 		<arg name="y" value="$(arg y1)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav2"/>
 		<arg name="x" value="$(arg x2)"/>
 		<arg name="y" value="$(arg y2)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav3"/>
 		<arg name="x" value="$(arg x3)"/>
 		<arg name="y" value="$(arg y3)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav4"/>
 		<arg name="x" value="$(arg x4)"/>
 		<arg name="y" value="$(arg y4)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav5"/>
 		<arg name="x" value="$(arg x5)"/>
 		<arg name="y" value="$(arg y5)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav6"/>
 		<arg name="x" value="$(arg x6)"/>
 		<arg name="y" value="$(arg y6)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav7"/>
 		<arg name="x" value="$(arg x7)"/>
 		<arg name="y" value="$(arg y7)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav8"/>
 		<arg name="x" value="$(arg x8)"/>
 		<arg name="y" value="$(arg y8)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav9"/>
 		<arg name="x" value="$(arg x9)"/>
 		<arg name="y" value="$(arg y9)"/>
+		<arg name="swarm_nodes" value="true"/>
 	</include>
 
 	<!-- Export positions as parameters -->
