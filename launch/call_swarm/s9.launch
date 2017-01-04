@@ -29,54 +29,63 @@
 		<arg name="x" value="$(arg x0)"/>
 		<arg name="y" value="$(arg y0)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav1"/>
 		<arg name="x" value="$(arg x1)"/>
 		<arg name="y" value="$(arg y1)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav2"/>
 		<arg name="x" value="$(arg x2)"/>
 		<arg name="y" value="$(arg y2)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav3"/>
 		<arg name="x" value="$(arg x3)"/>
 		<arg name="y" value="$(arg y3)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav4"/>
 		<arg name="x" value="$(arg x4)"/>
 		<arg name="y" value="$(arg y4)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav5"/>
 		<arg name="x" value="$(arg x5)"/>
 		<arg name="y" value="$(arg y5)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav6"/>
 		<arg name="x" value="$(arg x6)"/>
 		<arg name="y" value="$(arg y6)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav7"/>
 		<arg name="x" value="$(arg x7)"/>
 		<arg name="y" value="$(arg y7)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav8"/>
 		<arg name="x" value="$(arg x8)"/>
 		<arg name="y" value="$(arg y8)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="9"/>
 	</include>
 
 	<!-- Export positions as parameters -->

@@ -15,12 +15,14 @@
 		<arg name="x" value="$(arg x0)"/>
 		<arg name="y" value="$(arg y0)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="2"/>
 	</include>
 	<include file="$(find swarm)/launch/call_quad.launch">
 		<arg name="name" value="uav1"/>
 		<arg name="x" value="$(arg x1)"/>
 		<arg name="y" value="$(arg y1)"/>
 		<arg name="swarm_nodes" value="true"/>
+		<arg name="n" value="2"/>
 	</include>
 
 	<!-- Export positions as parameters -->

@@ -25,6 +25,7 @@ if __name__ == '__main__':
 			file.write("\t\t<arg name=\"x\" value=\"$(arg x" + str(i) + ")\"/>\n")
 			file.write("\t\t<arg name=\"y\" value=\"$(arg y" + str(i) + ")\"/>\n")
 			file.write("\t\t<arg name=\"swarm_nodes\" value=\"true\"/>\n")
+			file.write("\t\t<arg name=\"n\" value=\"" + argv[1] + "\"/>\n")
 			file.write("\t</include>\n")
 		
 		file.write("\n\t<!-- Export positions as parameters -->\n")
