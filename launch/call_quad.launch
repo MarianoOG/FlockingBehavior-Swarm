@@ -29,8 +29,12 @@
     <node pkg="swarm" type="pos_controller.py" name="pos_controller"/>
 
     <!-- micro_pso and reynolds nodes -->
-    <node pkg="swarm" type="micro_pso.py" name="micro_pso" output="screen" if="$(arg swarm_nodes)"/>
-    <node pkg="swarm" type="reynolds.py" name="reynolds" args="$(arg n)" output="screen" if="$(arg swarm_nodes)"/>
+    <group if="$(arg swarm_nodes)">
+      <node pkg="swarm" type="micro_pso.py" name="micro_pso" output="screen"/>
+      <node pkg="swarm" type="reynolds.py" name="reynolds" args="$(arg n)" output="screen"/>
+      <!-- <node pkg="swarm" type="quad_distance_server.py" name="quad_distance_server" output="screen"/> -->
+    </group>
+
   </group>
 
 </launch>

@@ -9,11 +9,7 @@ def state_callback(state):
     quad = state
 
     # Publish:
-    try:    
-        quad.header.stamp = rospy.Time.now()
-        pub.publish(quad)
-        # rospy.loginfo("%squad_pos = [%f, %f, %f - %f]", rospy.get_namespace(), quad.pos.x, quad.pos.y, quad.pos.z, quad.pos.yaw)
-        # rospy.loginfo("quad_vel = [%f, %f, %f - %f]", quad.vel.x, quad.vel.y, quad.vel.z, quad.vel.yaw)
+    try:
         t += 1
         if t==3:
            pubBest.publish(gBest)
@@ -30,6 +26,7 @@ def gBest_callback(val):
 
 if __name__ == '__main__':
     rospy.init_node('micro_pso', anonymous=True)
+    rate = rospy.Rate(100)
 
     pub = rospy.Publisher('next_generation', QuadState, queue_size=10)
     pubBest = rospy.Publisher('/swarm_best', Float64, queue_size=10)
@@ -46,10 +43,13 @@ if __name__ == '__main__':
     
     try:
         t = 0
-        rospy.Subscriber('/swarm_best', Float64, gBest_callback)
-        rospy.Subscriber('quad_state', QuadState, state_callback)
-        rospy.loginfo("Start spinning")
-        rospy.spin()
+        while not rospy.is_shutdown():
+            rospy.Subscriber('/swarm_best', Float64, gBest_callback)
+            rospy.Subscriber('quad_state', QuadState, state_callback)
+            quad.header.stamp = rospy.Time.now()
+            pub.publish(quad)
+            rate.sleep()
+            
 
     except rospy.ROSInterruptException:
         pass

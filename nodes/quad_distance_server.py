@@ -7,15 +7,21 @@ from swarm.srv import QuadDistance
 import rospy
 
 def handle_quad_distance(req):
+    d = -1.0
     quad = QuadState()
-    quad = rospy.wait_for_message('/uav' + str(req.other) + '/next_generation', QuadState)
 
-    e = Vector3()
-    e.x = quad.pos.x - req.quad.pos.x
-    e.y = quad.pos.y - req.quad.pos.y
-    e.z = quad.pos.z - req.quad.pos.z
-    
-    d = sqrt(e.x * e.x + e.y * e.y + e.z * e.z)
+    try:
+        quad = rospy.wait_for_message('/uav' + str(req.other) + '/next_generation', QuadState)
+        
+        e = Vector3()
+        e.x = quad.pos.x - req.quad.pos.x
+        e.y = quad.pos.y - req.quad.pos.y
+        e.z = quad.pos.z - req.quad.pos.z
+        
+        d = sqrt(e.x * e.x + e.y * e.y + e.z * e.z)
+
+    except rospy.ROSException:
+        pass
 
     # rospy.loginfo("Distance is %f", d)
     return d

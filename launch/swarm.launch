@@ -19,7 +19,4 @@
 	<!-- Rviz -->
 	<node pkg="rviz" type="rviz" name="rviz" args="-f world -d $(find swarm)/rviz_cfg/s$(arg n).rviz"/>
 
-	<!-- Distance service -->
-	<node pkg="swarm" type="quad_distance_server.py" name="quad_distance_server" output="screen"/>
-
 </launch>
