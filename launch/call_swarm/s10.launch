@@ -4,25 +4,25 @@
 <launch>
 
 	<!-- Initial positions (editable) -->
-	<arg name="x0" default="0.0"/> <!-- Edit -->
+	<arg name="x0" default="1.0"/> <!-- Edit -->
 	<arg name="y0" default="0.0"/> <!-- Edit -->
-	<arg name="x1" default="0.0"/> <!-- Edit -->
-	<arg name="y1" default="0.0"/> <!-- Edit -->
+	<arg name="x1" default="1.0"/> <!-- Edit -->
+	<arg name="y1" default="1.0"/> <!-- Edit -->
 	<arg name="x2" default="0.0"/> <!-- Edit -->
-	<arg name="y2" default="0.0"/> <!-- Edit -->
-	<arg name="x3" default="0.0"/> <!-- Edit -->
+	<arg name="y2" default="1.0"/> <!-- Edit -->
+	<arg name="x3" default="-1.0"/> <!-- Edit -->
 	<arg name="y3" default="0.0"/> <!-- Edit -->
-	<arg name="x4" default="0.0"/> <!-- Edit -->
-	<arg name="y4" default="0.0"/> <!-- Edit -->
+	<arg name="x4" default="-1.0"/> <!-- Edit -->
+	<arg name="y4" default="-1.0"/> <!-- Edit -->
 	<arg name="x5" default="0.0"/> <!-- Edit -->
-	<arg name="y5" default="0.0"/> <!-- Edit -->
-	<arg name="x6" default="0.0"/> <!-- Edit -->
-	<arg name="y6" default="0.0"/> <!-- Edit -->
-	<arg name="x7" default="0.0"/> <!-- Edit -->
-	<arg name="y7" default="0.0"/> <!-- Edit -->
-	<arg name="x8" default="0.0"/> <!-- Edit -->
+	<arg name="y5" default="-1.0"/> <!-- Edit -->
+	<arg name="x6" default="1.0"/> <!-- Edit -->
+	<arg name="y6" default="-1.0"/> <!-- Edit -->
+	<arg name="x7" default="-1.0"/> <!-- Edit -->
+	<arg name="y7" default="1.0"/> <!-- Edit -->
+	<arg name="x8" default="2.0"/> <!-- Edit -->
 	<arg name="y8" default="0.0"/> <!-- Edit -->
-	<arg name="x9" default="0.0"/> <!-- Edit -->
+	<arg name="x9" default="-2.0"/> <!-- Edit -->
 	<arg name="y9" default="0.0"/> <!-- Edit -->
 
 	<!-- Spawn quadrotors in positions -->
