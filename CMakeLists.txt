@@ -71,6 +71,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   Quad.msg
+  QuadFitness.msg
   QuadStamped.msg
   QuadState.msg
 )
@@ -79,7 +80,6 @@ add_message_files(
 add_service_files(
   FILES
   Fitness.srv
-  QuadDistance.srv
 )
 
 ## Generate actions in the 'action' folder
