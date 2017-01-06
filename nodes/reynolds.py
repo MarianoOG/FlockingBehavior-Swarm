@@ -3,7 +3,6 @@ import message_filters, rospy, sys
 from math import sqrt
 from geometry_msgs.msg import Vector3
 from swarm.msg import QuadStamped, QuadState
-from swarm.srv import QuadDistance
 
 def m_pso_callback(quad_state, args):
     global other, pub, quad
@@ -49,6 +48,7 @@ def m_pso_callback(quad_state, args):
 
 if __name__ == '__main__':
     rospy.init_node('reynolds', anonymous=True)
+    rospy.loginfo("Node %s started!", rospy.get_name())
     rate = rospy.Rate(100)
     
     # n number of quads in total:
@@ -72,10 +72,10 @@ if __name__ == '__main__':
 
     try:
         while not rospy.is_shutdown():
-            rospy.loginfo("%s", name)
             rospy.Subscriber('next_generation', QuadState, m_pso_callback, (n, current))
             quad.header.stamp = rospy.Time.now()
             pub.publish(quad)
+            rospy.loginfo("Node %s start spining!", rospy.get_name())
             rate.sleep()
 
     except rospy.ROSInterruptException:
@@ -85,4 +85,4 @@ if __name__ == '__main__':
         quad.header.stamp = rospy.Time.now()
         quad.x = xy['x']; quad.y = xy['y']; quad.z = 0.0; quad.yaw = 0.0
         pub.publish(quad)
-        rospy.loginfo("End of node")
+        rospy.loginfo("Node %s finished!", rospy.get_name())

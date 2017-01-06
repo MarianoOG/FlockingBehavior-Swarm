@@ -23,10 +23,10 @@
     </include>
     
     <!-- Position and velocity info of quadrotor -->
-    <node pkg="swarm" type="quad_info.py" name="quad_info"/>
+    <node pkg="swarm" type="quad_info.py" name="quad_info" output="screen"/>
 
     <!-- High level position controller -->
-    <node pkg="swarm" type="pos_controller.py" name="pos_controller"/>
+    <node pkg="swarm" type="pos_controller.py" name="pos_controller" output="screen"/>
 
     <!-- micro_pso and reynolds nodes -->
     <group if="$(arg swarm_nodes)">

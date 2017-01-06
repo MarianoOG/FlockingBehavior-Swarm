@@ -4,8 +4,13 @@ from math import sin, cos, pi
 from geometry_msgs.msg import Twist
 from swarm.msg import QuadStamped, QuadState
 
-def info_callback(state, des):
-	global pub, twist
+def des_callback(q_des):
+	global des
+	des = q_des
+	# rospy.loginfo("des = [%f, %f, %f - %f]", des.x, des.y, des.z, des.yaw)
+
+def info_callback(state):
+	global pub, twist, des
 
 	# Constant variables:
 	kp = [2.004,9.000,8.2] # Ku = [2.88,10.713,11.71]
@@ -39,27 +44,26 @@ def info_callback(state, des):
 	# Publish twist:
 	try:
 		pub.publish(twist)
+		# rospy.loginfo("quad_twist = [%f, %f, %f - %f]", twist.linear.x, twist.linear.y, twist.linear.z, twist.angular.z)
 	except rospy.ROSException:
 		pass
 
-	# Prints:
-	rospy.loginfo("quad_twist = [%f, %f, %f - %f]", twist.linear.x, twist.linear.y, twist.linear.z, twist.angular.z)
-
 if __name__ == '__main__':
 	rospy.init_node('pos_controller', anonymous=True)
-	state_sub = message_filters.Subscriber('quad_state', QuadState)
-	des_sub = message_filters.Subscriber('des_pos', QuadStamped)
-	ts = message_filters.ApproximateTimeSynchronizer([state_sub, des_sub], 10,0.015)
+	rospy.loginfo("Node %s started!", rospy.get_name())
 
 	pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 	twist = Twist()
 	twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
 	twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
 
+	des = QuadStamped()
+
 	try:
 		rospy.sleep(1)
-		ts.registerCallback(info_callback)
-		rospy.loginfo("Start spinning")
+		rospy.Subscriber('quad_state', QuadState, info_callback)
+		rospy.Subscriber('des_pos', QuadStamped, des_callback)
+		rospy.loginfo("Node %s start spining!", rospy.get_name())
 		rospy.spin()
 
 	except rospy.ROSInterruptException:
@@ -69,4 +73,4 @@ if __name__ == '__main__':
 		twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
 		twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
 		pub.publish(twist)
-		rospy.loginfo("End of node")
+		rospy.loginfo("Node %s finished!", rospy.get_name())
