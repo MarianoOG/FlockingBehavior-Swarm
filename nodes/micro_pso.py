@@ -26,6 +26,7 @@ def gBest_callback(val):
 
 if __name__ == '__main__':
     rospy.init_node('micro_pso', anonymous=True)
+    rospy.loginfo("Node %s started!", rospy.get_name())
     rate = rospy.Rate(100)
 
     pub = rospy.Publisher('next_generation', QuadState, queue_size=10)
@@ -43,13 +44,13 @@ if __name__ == '__main__':
     
     try:
         t = 0
+        rospy.loginfo("Node %s start subscribing!", rospy.get_name())
         while not rospy.is_shutdown():
             rospy.Subscriber('/swarm_best', Float64, gBest_callback)
             rospy.Subscriber('quad_state', QuadState, state_callback)
             quad.header.stamp = rospy.Time.now()
             pub.publish(quad)
             rate.sleep()
-            
 
     except rospy.ROSInterruptException:
         pass
@@ -59,4 +60,4 @@ if __name__ == '__main__':
         quad.vel.x = 0.0; quad.vel.y = 0.0; quad.vel.z = 0.0; quad.vel.yaw = 0.0
         quad.header.stamp = rospy.Time.now()
         pub.publish(quad)
-        rospy.loginfo("End of node")
+        rospy.loginfo("Node %s finished!", rospy.get_name())
