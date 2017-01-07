@@ -21,7 +21,7 @@ Panels:
     Expanded:
       - /Current View1
     Name: Views
-    Splitter Ratio: 0.5
+    Splitter Ratio: 0.542751
   - Class: rviz/Time
     Experimental: false
     Name: Time
@@ -121,7 +121,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 10
+      Distance: 7
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -133,10 +133,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.285398
+      Pitch: 0.340398
       Target Frame: world
       Value: Orbit (rviz)
-      Yaw: 0.540401
+      Yaw: 0.775401
     Saved: ~
 Window Geometry:
   Displays:

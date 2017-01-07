@@ -1,99 +1,125 @@
 #!/usr/bin/env python
-import message_filters, rospy, sys
+import rospy, sys
 from math import sqrt
 from geometry_msgs.msg import Vector3
 from swarm.msg import QuadStamped, QuadState
 
-def reynolds_callback(quad_state, quad_other):
-    global other, pub, quad, n, current
-
-    # rospy.loginfo("q = [%f %f %f - %f] %s", quad_state.pos.x, quad_state.pos.y, quad_state.pos.z, quad_state.pos.yaw, rospy.get_namespace())
-
-    # Repulsion parameters:
-    D = 0.65
-    r0 = 1.5
-    r1 = 1.0
-
-    # Alignement parameters:
-    c_frict = 0.1
-    r2 = 2.0
-    r3 = 1.1
-    r4 = 1.9
-
-    e = QuadState()
-    e.pos.x = quad_other.pos.x - quad_state.pos.x
-    e.pos.y = quad_other.pos.y - quad_state.pos.y
-    e.pos.z = quad_other.pos.z - quad_state.pos.z
-    e.vel.x = quad_other.vel.x - quad_state.vel.x
-    e.vel.y = quad_other.vel.y - quad_state.vel.y
-    e.vel.z = quad_other.vel.z - quad_state.vel.z
+def apply_reynolds_rules(quad_state, n, D, c_frict, r, a_pot, a_slip, nn):
+    global quad
     
-    d = sqrt(e.pos.x * e.pos.x + e.pos.y * e.pos.y + e.pos.z * e.pos.z)
+    # Restart variables:
+    for i in range(n):
+        a_pot[i].x = 0.0
+        a_pot[i].y = 0.0
+        a_pot[i].z = 0.0
 
-    # Modification vectors for repulsion and alignement:
-    quad.x = quad_state.pos.x
-    quad.y = quad_state.pos.y
-    quad.z = quad_state.pos.z
+        a_slip[i].x = 0.0
+        a_slip[i].y = 0.0
+        a_slip[i].z = 0.0
 
-    if d<r0:
-        m = min(r1,r0-d)
-        quad.x -= D * m * e.pos.x / d
-        quad.y -= D * m * e.pos.y / d
-        quad.z -= D * m * e.pos.z / d
+        nn[i] = 0.0
 
-    if d<r2:
-        d2 = max(d-(r2-r4),r3)
-        d2 = d2 * d2
-        quad.x += c_frict * (quad_other.vel.x - quad_state.vel.x / d2)
-        quad.y += c_frict * (quad_other.vel.y - quad_state.vel.y / d2)
-        quad.z += c_frict * (quad_other.vel.z - quad_state.vel.z / d2)
+    dist = Vector3()
+    for i in range(n):
+        for j in range(i,n):
+            if not(i==j):
+                dist.x = quad_state[j].pos.x - quad_state[i].pos.x
+                dist.y = quad_state[j].pos.y - quad_state[i].pos.y
+                dist.z = quad_state[j].pos.z - quad_state[i].pos.z
+                
+                d = sqrt(dist.x*dist.x + dist.y*dist.y + dist.z*dist.z)
+
+                if d>0.0:
+                    
+                    if d<r[2]:
+                        d2 = max(d-(r[2]-r[4]),r[3])
+                        d2 = d2 * d2
+                        nn[i] += 1.0
+                        nn[j] += 1.0
+                        a_slip[i].x += quad_state[j].vel.x - quad_state[i].vel.x / d2
+                        a_slip[i].y += quad_state[j].vel.y - quad_state[i].vel.y / d2
+                        a_slip[i].z += quad_state[j].vel.z - quad_state[i].vel.z / d2
+                        a_slip[j].x -= a_slip[i].x
+                        a_slip[j].y -= a_slip[i].y
+                        a_slip[j].z -= a_slip[i].z
+
+                        if d<r[0]:
+                            a_pot[i].x += min(r[1],r[0]-d)*dist.x / d
+                            a_pot[i].y += min(r[1],r[0]-d)*dist.y / d
+                            a_pot[i].z += min(r[1],r[0]-d)*dist.z / d
+                            a_pot[j].x -= a_pot[i].x
+                            a_pot[j].y -= a_pot[i].y
+                            a_pot[j].z -= a_pot[i].z
+
+        m = max(nn[i],1)
+        a_slip[i].x /= m
+        a_slip[i].y /= m
+        a_slip[i].z /= m
+        
+        # Final movements:
+        quad[i].x = quad_state[i].pos.x - D * a_pot[i].x + c_frict * a_slip[i].x
+        quad[i].y = quad_state[i].pos.y - D * a_pot[i].y + c_frict * a_slip[i].y
+        quad[i].z = quad_state[i].pos.z - D * a_pot[i].z + c_frict * a_slip[i].z
+
+        # rospy.loginfo("i: %i, quad [%f, %f, %f]", i, quad[i].x, quad[i].y, quad[i].z)
+
+def quad_callback(other_quad, i):
+    global quad_state
+
+    quad_state[i].pos = other_quad.pos
+    quad_state[i].vel = other_quad.vel
 
 if __name__ == '__main__':
     rospy.init_node('reynolds', anonymous=True)
     rospy.loginfo("Node %s started!", rospy.get_name())
     rate = rospy.Rate(100)
-    
+
     # n number of quads in total:
     argv = sys.argv
     rospy.myargv(argv)
     n = int(argv[1])
-    
-    # Counter for other quads
-    other = 0
-    
-    # Current quad and initial position:
-    name = rospy.get_namespace()
-    current = int(name[-2])
-    xy = rospy.get_param(name)
 
-    # Publisher and initial message:
-    pub = rospy.Publisher('des_pos', QuadStamped, queue_size=10)
-    quad = QuadStamped()
-    quad.header.frame_id = 'world'
-    quad.x = xy['x']; quad.y = xy['y']; quad.z = 0.0; quad.yaw = 0.0
-
-    sub = []
-    ts = []
+    # Repulsion & alignment parameters:
+    D = 0.65
+    c_frict = 0.1
+    r = [1.5, 1.0, 2.0, 1.1, 1.9]
+    
+    # Publisher, initial messages and initial variables:
+    pub = []
+    quad = []
+    quad_state = []
+    a_pot = []
+    a_slip = []
+    nn = []
     for i in range(n):
-        sub.append(message_filters.Subscriber('/uav' + str(i) + '/next_generation', QuadState))
-    for i in range(n):
-        if not current==i:
-            ts.append(message_filters.ApproximateTimeSynchronizer([sub[current],sub[i]], 10, 0.01))
+        pub.append(rospy.Publisher('/uav' + str(i) + '/des_pos', QuadStamped, queue_size=10))
+        quad.append(QuadStamped())
+        quad[i].header.frame_id = 'world'
+        xy = rospy.get_param('/uav' + str(i))
+        quad[i].x = xy['x']; quad[i].y = xy['y']; quad[i].z = 0.0; quad[i].yaw = 0.0
+        quad_state.append(QuadState())
+        a_pot.append(Vector3())
+        a_slip.append(Vector3())
+        nn.append(0.0)
 
     try:
         rospy.loginfo("Node %s start subscribing!", rospy.get_name())
         while not rospy.is_shutdown():
-            for i in range(n-1):
-                ts[i].registerCallback(reynolds_callback)
-            quad.header.stamp = rospy.Time.now()
-            pub.publish(quad)
+            for i in range(n):
+                rospy.Subscriber('/uav' + str(i) + '/next_generation', QuadState, quad_callback, i)
+            apply_reynolds_rules(quad_state, n, D, c_frict, r, a_pot, a_slip, nn)
+            for i in range(n):
+                quad[i].header.stamp = rospy.Time.now()
+                pub[i].publish(quad[i])
             rate.sleep()
 
     except rospy.ROSInterruptException:
         pass
 
     finally:
-        quad.header.stamp = rospy.Time.now()
-        quad.x = xy['x']; quad.y = xy['y']; quad.z = 0.0; quad.yaw = 0.0
-        pub.publish(quad)
+        for i in range(n):
+            xy = rospy.get_param('/uav' + str(i))
+            quad[i].x = xy['x']; quad[i].y = xy['y']; quad[i].z = 0.0; quad[i].yaw = 0.0
+            quad[i].header.stamp = rospy.Time.now()
+            pub[i].publish(quad[i])
         rospy.loginfo("Node %s finished!", rospy.get_name())

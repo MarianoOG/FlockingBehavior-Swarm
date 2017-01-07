@@ -1,46 +1,94 @@
 #!/usr/bin/env python
 import rospy
-from std_msgs.msg import Float64
+from math import sqrt
+from random import random
+from std_msgs.msg import Int32
 from swarm.msg import QuadState, QuadFitness
 from swarm.srv import Fitness
 
+def fun(x, y, z, yaw):
+    f = - x * x - (y - 2) * (y - 2) - abs(z-1) - abs(yaw)
+    # max(0,2,1,0)
+    return f
+
+def fitness_function(quad):
+    fitness = fun(quad.pos.x, quad.pos.y, quad.pos.z, quad.pos.yaw)
+    return fitness
+
 def gBest_callback(val):
-    global gBest, pubBest
+    global pubBest, gBest
     
     # rospy.loginfo("%s is recieving Gbest = %f", rospy.get_namespace(), gBest.fitness)
-
+    
     if gBest.fitness <= val.fitness:
         gBest = val
     else:
-        pubBest.publish(gBest)
+        try:
+            pubBest.publish(gBest)
+        except rospy.ROSException:
+            pass
 
-def pso_callback(val):
-    global pso
-    pso = val
+# def pso_callback(val):
+#     global pso
+#     pso = val
 
-def state_callback(state):
-    global gBest, pBest, pub, pubBest, quad, t
+def state_callback(quad, ab):
+    global gBest, pBest, pub, pubBest
     
-    quad.pos.x = state.pos.x
-    quad.pos.y = state.pos.y
-    quad.pos.z = state.pos.z
-    quad.vel.x = state.vel.x
-    quad.vel.y = state.vel.y
-    quad.vel.z = state.vel.z
-    
-    if state.header.stamp.secs >= 1:
-        quad.pos.z = 1.0
+    fitness = fitness_function(quad)
+
+    # First value of gBest and pBest
+    if gBest.quad.z == -1.0:
+        gBest.quad = quad.pos
+        gBest.fitness = fitness
+
+    if pBest.quad.z == -1.0:
+        pBest.quad = quad.pos
+        pBest.fitness = fitness
+
+    # Checking the local and global best state:
+    if fitness > pBest.fitness:
+        pBest.quad = quad.pos
+        pBest.fitness = fitness
+
+        if pBest.fitness > gBest.fitness:
+            gBest = pBest
+            try:
+                pubBest.publish(gBest)
+            except rospy.ROSException:
+                pass
+
+    # Random parameters
+    r = [random(), random()]
+
+    # Velocity:
+    vel = quad.vel
+    yaw = quad.vel.yaw
+
+    # Local knoledge:
+    vel.x += ab[0] * r[0] * (pBest.quad.x - quad.pos.x)
+    vel.y += ab[0] * r[0] * (pBest.quad.y - quad.pos.y)
+    vel.z += ab[0] * r[0] * (pBest.quad.z - quad.pos.z)
+    yaw += ab[0] * r[0] * (pBest.quad.yaw - quad.pos.yaw)
+
+    # Global knoledge:
+    vel.x += ab[1] * r[1] * (gBest.quad.x - quad.pos.x)
+    vel.y += ab[1] * r[1] * (gBest.quad.y - quad.pos.y)
+    vel.z += ab[1] * r[1] * (gBest.quad.z - quad.pos.z)
+    yaw += ab[1] * r[1] * (gBest.quad.yaw - quad.pos.yaw)
+
+    # Normalize vector and add to position:
+    c = 0.5
+    d = sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z)
+    quad.pos.x += c * vel.x / d
+    quad.pos.y += c * vel.y / d
+    quad.pos.z += c * vel.z / d
+    quad.pos.yaw += c * yaw / d
 
     # Publish:
     try:
         quad.header.stamp = rospy.Time.now()
         pub.publish(quad)
-
-        t += 1
-        if t==3:
-           pubBest.publish(gBest)
-           t = 0
-           # rospy.loginfo("%s is sending", rospy.get_namespace())
 
     except rospy.ROSException:
         pass
@@ -50,23 +98,20 @@ if __name__ == '__main__':
     rospy.loginfo("Node %s started!", rospy.get_name())
     rate = rospy.Rate(100)
 
+    # Publishers:
     pub = rospy.Publisher('next_generation', QuadState, queue_size=10)
     pubBest = rospy.Publisher('/swarm_best', QuadFitness, queue_size=10)
-    gBest = QuadFitness()
-    gBest.fitness = 0.0
-    pBest = 0.0
-
-    quad = QuadState()
-    quad.header.frame_id = 'world'
-
-    xy = rospy.get_param(rospy.get_namespace())
-    quad.pos.x = xy['x']; quad.pos.y = xy['y']; quad.pos.z = 0.0; quad.pos.yaw = 0.0
-    quad.vel.x = 0.0; quad.vel.y = 0.0; quad.vel.z = 0.0; quad.vel.yaw = 0.0
+    
+    # Initial state of variables:
+    ab = [2.0, 2.0]
+    gBest = QuadFitness(); gBest.quad.z = -1.0
+    pBest = QuadFitness(); pBest.quad.z = -1.0
+    # pso = ??
     
     try:
-        t = 0    
         rospy.Subscriber('/swarm_best', QuadFitness, gBest_callback)
-        rospy.Subscriber('quad_state', QuadState, state_callback)
+        rospy.Subscriber('quad_state', QuadState, state_callback, ab)
+        # rospy.Subscriber('/convergence', Int32, pso_callback)
         rospy.loginfo("Node %s start spining!", rospy.get_name())
         rospy.spin()
 
@@ -74,8 +119,4 @@ if __name__ == '__main__':
         pass
 
     finally:
-        quad.pos.x = xy['x']; quad.pos.y = xy['y']; quad.pos.z = 0.0; quad.pos.yaw = 0.0
-        quad.vel.x = 0.0; quad.vel.y = 0.0; quad.vel.z = 0.0; quad.vel.yaw = 0.0
-        quad.header.stamp = rospy.Time.now()
-        pub.publish(quad)
         rospy.loginfo("Node %s finished!", rospy.get_name())
