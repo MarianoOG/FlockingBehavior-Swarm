@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 import rospy
-from math import sqrt
+from math import sqrt, sin
 from random import random
 from std_msgs.msg import Int32
 from swarm.msg import QuadState, QuadFitness
 from swarm.srv import Fitness
 
 def fun(x, y, z, yaw):
-    f = - x * x - (y - 2) * (y - 2) - abs(z-1) - abs(yaw)
-    # max(0,2,1,0)
+    # z = z-2; y = y-2; x = x-2; yaw = yaw-1
+    # r = sqrt(x*x+y*y+z*z+yaw*yaw) + 0.0001
+    # f = sin(r)/r
+    f = - (x - 1) * (x - 1) - (y - 1) * (y - 1) - abs(z - 1) - abs(yaw - 1) # max(1,2,1,1)
     return f
 
 def fitness_function(quad):
@@ -58,32 +60,29 @@ def state_callback(quad, ab):
             except rospy.ROSException:
                 pass
 
-    # Random parameters
-    r = [random(), random()]
-
-    # Velocity:
+    # Actual velocity and random parameters
     vel = quad.vel
-    yaw = quad.vel.yaw
+    r = [random(), random(), random()]
 
     # Local knoledge:
     vel.x += ab[0] * r[0] * (pBest.quad.x - quad.pos.x)
     vel.y += ab[0] * r[0] * (pBest.quad.y - quad.pos.y)
     vel.z += ab[0] * r[0] * (pBest.quad.z - quad.pos.z)
-    yaw += ab[0] * r[0] * (pBest.quad.yaw - quad.pos.yaw)
+    vel.yaw += ab[0] * r[0] * (pBest.quad.yaw - quad.pos.yaw)
 
     # Global knoledge:
-    vel.x += ab[1] * r[1] * (gBest.quad.x - quad.pos.x)
-    vel.y += ab[1] * r[1] * (gBest.quad.y - quad.pos.y)
-    vel.z += ab[1] * r[1] * (gBest.quad.z - quad.pos.z)
-    yaw += ab[1] * r[1] * (gBest.quad.yaw - quad.pos.yaw)
+    vel.x += ab[1] * r[1] * (gBest.quad.x - quad.pos.x) + r[2]
+    vel.y += ab[1] * r[1] * (gBest.quad.y - quad.pos.y) + r[2]
+    vel.z += ab[1] * r[1] * (gBest.quad.z - quad.pos.z) + r[2]
+    vel.yaw += ab[1] * r[1] * (gBest.quad.yaw - quad.pos.yaw) + r[2]
 
     # Normalize vector and add to position:
-    c = 0.5
-    d = sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z)
+    c = 0.3
+    d = sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z + vel.yaw * vel.yaw)
     quad.pos.x += c * vel.x / d
     quad.pos.y += c * vel.y / d
     quad.pos.z += c * vel.z / d
-    quad.pos.yaw += c * yaw / d
+    quad.pos.yaw += vel.yaw / d
 
     # Publish:
     try:
