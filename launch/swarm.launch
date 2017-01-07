@@ -19,11 +19,12 @@
 
 	<!-- Reynolds rules -->
 	<node pkg="swarm" type="reynolds.py" name="reynolds" args="$(arg n)" output="screen"/>
+	<node pkg="swarm" type="best_fit.py" name="best_fit" args="$(arg n)" output="screen"/>
 
 	<!-- Rviz -->
 	<node pkg="rviz" type="rviz" name="rviz" args="-f world -d $(find swarm)/rviz_cfg/s$(arg n).rviz" if="$(arg rviz)"/>
 
 	<!-- Plot gBest -->
-	<node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" args="/swarm_best/fitness /swarm_best/quad/x:y:z:yaw"/>
+	<node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" args="/last_best/fitness /last_best/quad/x:y:z:yaw"/>
 
 </launch>
