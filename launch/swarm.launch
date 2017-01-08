@@ -30,7 +30,9 @@
 	<node pkg="rviz" type="rviz" name="rviz" args="-f world -d $(find swarm)/rviz_cfg/s$(arg n).rviz" if="$(arg rviz)"/>
 
 	<!-- Plot gBest -->
-	<node pkg="rqt_plot" type="rqt_plot" name="fit" args="/last_best/fitness"/>
-	<node pkg="rqt_plot" type="rqt_plot" name="pos" args="/last_best/quad"/>
+	<group ns="graphs">
+		<node pkg="rqt_plot" type="rqt_plot" name="fitness" args="/last_best"/>
+		<node pkg="rqt_plot" type="rqt_plot" name="position" args="/last_best/quad"/>
+	</group>
 
 </launch>
