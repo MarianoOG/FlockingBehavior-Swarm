@@ -10,7 +10,7 @@ def fun(x, y, z, yaw):
     # z = z-2; y = y-2; x = x-2; yaw = yaw-1
     # r = sqrt(x*x+y*y+z*z+yaw*yaw) + 0.0001
     # f = sin(r)/r
-    f = - (x - 1) * (x - 1) - (y - 1) * (y - 1) - abs(z - 1) - abs(yaw - 1) # max(1,2,1,1)
+    f = - (x - 1) * (x - 1) - (y - 1) * (y - 1) - abs(z - 1) - abs(yaw - 1) # max(1,1,1,1)
     return f
 
 def fitness_function(quad):
@@ -30,12 +30,12 @@ def gBest_callback(val):
         except rospy.ROSException:
             pass
 
-# def pso_callback(val):
-#     global pso
-#     pso = val
+def pso_callback(val):
+    global pso
+    pso = val
 
 def state_callback(quad, ab):
-    global gBest, pBest, pub, pubBest
+    global gBest, pBest, pub, pubBest, pso
     
     fitness = fitness_function(quad)
 
@@ -84,6 +84,7 @@ def state_callback(quad, ab):
     quad.pos.z += c * vel.z / d
     quad.pos.yaw += vel.yaw / d
 
+
     # Publish:
     try:
         quad.header.stamp = rospy.Time.now()
@@ -105,12 +106,12 @@ if __name__ == '__main__':
     ab = [2.0, 2.0]
     gBest = QuadFitness(); gBest.quad.z = -1.0
     pBest = QuadFitness(); pBest.quad.z = -1.0
-    # pso = ??
+    pso = -1 # No value
     
     try:
         rospy.Subscriber('/swarm_best', QuadFitness, gBest_callback)
         rospy.Subscriber('quad_state', QuadState, state_callback, ab)
-        # rospy.Subscriber('/convergence', Int32, pso_callback)
+        rospy.Subscriber('/swarm_state', Int32, pso_callback)
         rospy.loginfo("Node %s start spining!", rospy.get_name())
         rospy.spin()
 
