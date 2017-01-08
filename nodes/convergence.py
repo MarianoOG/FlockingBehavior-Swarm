@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+from std_msgs.msg import Int32
 from swarm.msg import QuadFitness
 
 def fit_callback(val):
@@ -8,19 +9,22 @@ def fit_callback(val):
     best = val
 
 if __name__ == '__main__':
-    rospy.init_node('best_fit', anonymous=True)
+    rospy.init_node('convergence', anonymous=True)
     rospy.loginfo("Node %s started!", rospy.get_name())
     rate = rospy.Rate(100)
 
     # Publishers:
     pub = rospy.Publisher('/swarm_state', Int32, queue_size=10)
     best = QuadFitness()
+    state = -1
     
     try:
         rospy.loginfo("Node %s start subscribing!", rospy.get_name())
         while not rospy.is_shutdown():
             rospy.Subscriber('/last_best', QuadFitness, fit_callback)
-            pub.publish(state)
+            if rospy.Time.now().secs == 20:
+                state = 1
+                pub.publish(state)
             rate.sleep()
 
     except rospy.ROSInterruptException:
