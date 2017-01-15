@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- Spawn swarm of n size and make the reynolds and micro-pso algoritms with them -->
+
+<launch>
+	
+	<!-- General variables -->
+	<arg name="n"/>
+	<arg name="visible" default="false"/>
+	<arg name="rviz" default="false"/>
+
+	<!-- Start Gazebo with empty world running in (max) realtime and the quadrotor -->
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="gui" value="false" unless="$(arg visible)"/>
+		<arg name="headless" value="true" unless="$(arg visible)"/>
+	</include>
+
+	<!-- Swarm spawn -->
+	<include file="$(find swarm)/launch/call_swarm/s$(arg n).launch"/>
+
+	<!-- Reynolds rules -->
+	<node pkg="swarm" type="reynolds.py" name="reynolds" args="$(arg n)" output="screen"/>
+
+	<!-- Movement -->
+	<!-- <node pkg="swarm" type="swarm_go_up_and_stay.py" name="swarm_go_up_and_stay" args="$(arg n)"/> -->
+	<node pkg="swarm" type="swarm_go_and_keep_moving.py" name="swarm_go_and_keep_moving" args="$(arg n)"/>
+
+	<!-- Rviz -->
+	<node pkg="rviz" type="rviz" name="rviz" args="-f world -d $(find swarm)/rviz_cfg/s$(arg n).rviz" if="$(arg rviz)"/>
+
+</launch>

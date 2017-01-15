@@ -12,7 +12,7 @@ if __name__ == '__main__':
     pub = []
     quad = []
     for i in range(n):
-        pub.append(rospy.Publisher('/uav' + str(i) + '/des_pos', QuadStamped, queue_size=n))
+        pub.append(rospy.Publisher('/uav' + str(i) + '/mid_state', QuadStamped, queue_size=n))
         quad.append(QuadStamped())
         quad[i].header.frame_id = 'world'
         xy = rospy.get_param('/uav' + str(i))
@@ -24,9 +24,9 @@ if __name__ == '__main__':
     try:
         while not rospy.is_shutdown():
             for i in range(n):
-                quad[i].header.stamp = rospy.Time.now()
-                if quad[i].header.stamp.secs >= 2:
+                if quad[i].header.stamp.secs >= 1:
                     quad[i].z = 1.0
+                quad[i].header.stamp = rospy.Time.now()
                 pub[i].publish(quad[i])
                 rospy.loginfo("%f = [%f, %f, %f - %f]", i, quad[i].x, quad[i].y, quad[i].z, quad[i].yaw)
             rate.sleep()
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     finally:
         for i in range(n):
-            quad[i].header.stamp = rospy.Time.now()
             quad[i].z = 0
+            quad[i].header.stamp = rospy.Time.now()
             pub[i].publish(quad[i])
         rospy.loginfo("End of node")
