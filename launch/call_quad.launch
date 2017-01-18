@@ -27,10 +27,10 @@
 
     <!-- High level position controller -->
     <node pkg="swarm" type="pos_controller.py" name="pos_controller" output="screen"/>
-
+    
     <!-- micro_pso node -->
     <!-- <node pkg="swarm" type="micro_pso.py" name="micro_pso" output="screen" if="$(arg swarm_nodes)"/> -->
-    <node pkg="swarm" type="mid_reynolds.py" name="mid_reynolds" if="$(arg swarm_nodes)"/>
+    <node pkg="swarm" type="mid_reynolds.py" name="mid_reynolds" output="screen" if="$(arg swarm_nodes)"/>
 
   </group>
 

@@ -6,6 +6,7 @@ from swarm.msg import QuadStamped
 
 if __name__ == '__main__':
     rospy.init_node('swarm_go_and_keep_moving', anonymous=True)
+    rospy.loginfo("Node %s started!", rospy.get_name())
     rate = rospy.Rate(100)
     argv = sys.argv
     rospy.myargv(argv)
@@ -25,6 +26,7 @@ if __name__ == '__main__':
 
     try:
         t = 1
+        rospy.loginfo("Node %s start sending!", rospy.get_name())
         while not rospy.is_shutdown():
             for i in range(n):
                 quad[i].header.stamp = rospy.Time.now()
@@ -38,10 +40,11 @@ if __name__ == '__main__':
                         xy = rospy.get_param('/uav' + str(i))
                         quad[i].x = quad[0].x + xy['x']
                         quad[i].y = quad[0].y + xy['y']
-                        quad[i].z = quad[0].z + random() / 2.0
-                        quad[i].yaw = quad[0].yaw + random() / 2.0
-                    if i==n:
+                        quad[i].z = quad[0].z + random() / 5.0
+                        quad[i].yaw = quad[0].yaw + random() / 5.0
+                    if i==n-1:
                         t += 4
+                        rospy.loginfo("%s: t = %i!", rospy.get_name(), t)
                 pub[i].publish(quad[i])
                 rospy.loginfo("%f = [%f, %f, %f - %f]", i, quad[i].x, quad[i].y, quad[i].z, quad[i].yaw)
             rate.sleep()
@@ -58,4 +61,4 @@ if __name__ == '__main__':
             quad[i].yaw = 0
             quad[i].header.stamp = rospy.Time.now()
             pub[i].publish(quad[i])
-        rospy.loginfo("End of node")
+        rospy.loginfo("Node %s finished!", rospy.get_name())
